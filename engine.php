@@ -197,6 +197,7 @@
                 }
             }
         }
+        
         else if($ajax_type=="search_ajax")
         {
             $v_modul = $_GET["v_modul"];
@@ -403,7 +404,65 @@
                 $_SESSION["list_file"]["menu"] = "tbody";
                 include("admin_menu_list.php");
             }
+            else if($v_modul=="role_access")
+            {
+                $arr_keyword[0] = "role_access_tbl.role_access_name";
+                $arr_keyword[1] = "role_access_tbl.POSITION_ID";
+                $arr_keyword[2] = "role_access_tbl.EMPLOYEE_ID";
+                $arr_keyword[3] = "role_access_tbl.NOTE";
+
+                $where = search_keyword($q, $arr_keyword); 
+                $p = 1; 
+                
+                $sql = "
+                        SELECT
+                          cid,
+                          role_access_name,
+                          POSITION_ID,
+                          EMPLOYEE_ID,
+                          NOTE,
+                          Active
+                        FROM
+                          role_access_tbl 
+                        WHERE
+                            1=1
+                            ".$where."
+                        ORDER BY 
+                           role_access_name ASC 
+                "; 
+                $arr_data["role_access_tbl_all"] = SQL_SELECT($sql, $db["dbms"]);
+                $arr_data["jml_data"][$v_modul] = count($arr_data["role_access_tbl_all"]); 
+                $start_limit = (($v_page-1)*$max_page);
+                
+                $sql = "
+                        SELECT
+                          cid,
+                          role_access_name,
+                          POSITION_ID,
+                          EMPLOYEE_ID,
+                          NOTE,
+                          Active
+                        FROM
+                          role_access_tbl 
+                        WHERE
+                            1=1
+                            ".$where." 
+                        ORDER BY
+                            role_access_name ASC
+                        LIMIT
+                            0, ".$max_page."
+                ";
+                $arr_data["role_access_tbl"] = SQL_SELECT($sql, $db["dbms"]);
+                
+                include("paging.php");
+                
+                echo "@#@";
+                
+                $_SESSION["list_file"][$v_modul] = "tbody";
+                include("admin_".$v_modul."_list.php");
+            }
         }
+        
         else if($ajax_type=="add_ajax" || $ajax_type=="edit_ajax")
         {
             $v_modul = $_GET["v_modul"];
@@ -526,6 +585,180 @@
                                             </div>
                                         </div>
                                     </div> 
+                                    
+                                    <div class="form-group m-b-0">
+                                        <div class="col-sm-9">
+                                            <button class="btn btn-app" type="submit">Submit</button>
+                                            <button class="btn btn-app" type="button" onclick="CallAjax('back_ajax', '<?php echo $v_modul; ?>')">Back</button>
+                                        </div>
+                                    </div> 
+                                </form>
+                                <iframe id="my_iframe_<?php echo $v_modul; ?>" name="my_iframe_<?php echo $v_modul; ?>" style="width: 100%; height: 0px; border: 0px;"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                 
+                <?php    
+            }
+            
+            else if($v_modul=="role_access")
+            {
+                if($ajax_type=="edit_ajax")
+                {
+                    $title_menu = "Edit Role Access";
+                }
+                else if($ajax_type=="add_ajax")
+                {
+                    $title_menu = "Add Role Access";
+                }
+                
+                $sql = "
+                        SELECT
+                            *
+                        FROM
+                            role_access_tbl
+                        WHERE
+                            1=1
+                            AND cid = '".$v_cid."'
+                        LIMIT
+                            0,1
+                ";
+                $arr_data["role_access_tbl"] = SQL_SELECT($sql, $db["dbms"]);
+                
+                
+                
+                
+                ?>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4><?php echo $title_menu; ?></h4>
+                            </div>
+                            <div class="card-block">
+                                <form class="form-horizontal m-t-sm" method="post" target="my_iframe_<?php echo $v_modul; ?>" name="theform_<?php echo $v_modul; ?>" id="theform_<?php echo $v_modul; ?>" enctype="multipart/form-data" action="<?php echo $base_url; ?>/engine.php" onsubmit="return validasi_<?php echo $v_modul; ?>('<?php echo $v_modul; ?>')">
+                                <input type="hidden" name="iframe_action" value="<?php echo $ajax_type; ?>">
+                                <input type="hidden" name="v_modul" value="<?php echo $v_modul; ?>">
+                                <input type="hidden" name="v_<?php echo $v_modul; ?>_cid" value="<?php echo $v_cid; ?>">
+                                    <div class="form-group">
+                                        <div class="col-sm-6">
+                                            <div class="form-material">
+                                                <input class="form-control" type="text" id="v_<?php echo $v_modul; ?>_role_access_name" name="v_<?php echo $v_modul; ?>_role_access_name" value="<?php echo $arr_data["role_access_tbl"][0]["role_access_name"]; ?>" />
+                                                <label for="v_<?php echo $v_modul; ?>_role_access_name">Name</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <div class="col-sm-6">
+                                            <div class="form-material">
+                                                <input class="form-control" readonly="readonly" type="text" id="v_<?php echo $v_modul; ?>_POSITION_ID" name="v_<?php echo $v_modul; ?>_POSITION_ID" value="<?php echo $arr_data["role_access_tbl"][0]["POSITION_ID"]; ?>" />
+                                                <label for="v_<?php echo $v_modul; ?>_POSITION_ID">Position</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <div class="col-sm-6">
+                                            <div class="form-material">
+                                                <input class="form-control" readonly="readonly" type="text" id="v_<?php echo $v_modul; ?>_EMPLOYEE_ID" name="v_<?php echo $v_modul; ?>_EMPLOYEE_ID" value="<?php echo $arr_data["role_access_tbl"][0]["EMPLOYEE_ID"]; ?>" onclick="CallAjax('modal_ajax', '<?php echo $v_modul; ?>', 'EMPLOYEE_ID', 'modal-lg')" />
+                                                <label for="v_<?php echo $v_modul; ?>_EMPLOYEE_ID">Employee</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <div class="col-sm-6">
+                                            <div class="form-material">
+                                                <input class="form-control" type="text" id="v_<?php echo $v_modul; ?>_NOTE" name="v_<?php echo $v_modul; ?>_NOTE" value="<?php echo $arr_data["role_access_tbl"][0]["NOTE"]; ?>" />
+                                                <label for="v_<?php echo $v_modul; ?>_NOTE">Note</label>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                    
+                                    <div class="form-group">
+                                        <div class="col-sm-6">
+                                            <div class="form-material">
+                                                <input class="form-control" type="text" id="v_<?php echo $v_modul; ?>_first_cursor" name="v_<?php echo $v_modul; ?>_first_cursor" value="<?php echo $arr_data["menu_tbl"][0]["first_cursor"]; ?>" />
+                                                <label for="v_<?php echo $v_modul; ?>_first_cursor">Status</label>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                    
+                                   
+                                    
+                                    <div class="form-group m-b-0">
+                                        <div class="col-sm-9">
+                                            <button class="btn btn-app" type="submit">Submit</button>
+                                            <button class="btn btn-app" type="button" onclick="CallAjax('back_ajax', '<?php echo $v_modul; ?>')">Back</button>
+                                        </div>
+                                    </div> 
+                                </form>
+                                <iframe id="my_iframe_<?php echo $v_modul; ?>" name="my_iframe_<?php echo $v_modul; ?>" style="width: 100%; height: 0px; border: 0px;"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                 
+                <?php    
+            }
+            
+            else if($v_modul=="user")
+            {
+                if($ajax_type=="edit_ajax")
+                {
+                    $title_menu = "Edit User";
+                }
+                else if($ajax_type=="add_ajax")
+                {
+                    $title_menu = "Add User";
+                }
+                
+                $sql = "
+                        SELECT
+                            *
+                        FROM
+                            tab_user
+                        WHERE
+                            1=1
+                            AND usrID = '".$v_cid."'
+                        LIMIT
+                            0,1
+                ";
+                $arr_data["tab_user"] = SQL_SELECT($sql, $db["dbms"]);
+                
+                
+                
+                ?>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4><?php echo $title_menu; ?></h4>
+                            </div>
+                            <div class="card-block">
+                                <form class="form-horizontal m-t-sm" method="post" target="my_iframe_<?php echo $v_modul; ?>" name="theform_<?php echo $v_modul; ?>" id="theform_<?php echo $v_modul; ?>" enctype="multipart/form-data" action="<?php echo $base_url; ?>/engine.php" onsubmit="return validasi_<?php echo $v_modul; ?>('<?php echo $v_modul; ?>')">
+                                <input type="hidden" name="iframe_action" value="<?php echo $ajax_type; ?>">
+                                <input type="hidden" name="v_modul" value="<?php echo $v_modul; ?>">
+                                <input type="hidden" name="v_<?php echo $v_modul; ?>_cid" value="<?php echo $v_cid; ?>">
+                                    <div class="form-group">
+                                        <div class="col-sm-6">
+                                            <div class="form-material">
+                                                <input class="form-control" type="text" id="v_<?php echo $v_modul; ?>_menu_name" name="v_<?php echo $v_modul; ?>_menu_name" value="<?php echo $arr_data["menu_tbl"][0]["menu_name"]; ?>" />
+                                                <label for="v_<?php echo $v_modul; ?>_menu_name">Employee ID</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-6">
+                                            <div class="form-material">
+                                                <input class="form-control" type="text" id="v_<?php echo $v_modul; ?>_menu_group" name="v_<?php echo $v_modul; ?>_menu_group" value="<?php echo $arr_data["menu_tbl"][0]["menu_group"]; ?>" />
+                                                <label for="v_<?php echo $v_modul; ?>_menu_group">FullName</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
                                     
                                     <div class="form-group m-b-0">
                                         <div class="col-sm-9">
@@ -667,6 +900,7 @@
                  
             <?php
         }
+        
         else if($ajax_type=="back_ajax")
         {
             $v_modul = $_GET["v_modul"];
@@ -824,6 +1058,85 @@
             ?>
                  
             <?php
+        }
+        
+        else if($ajax_type=="page_ajax")
+        {
+            $v_modul = $_GET["v_modul"];
+            $v_page  = $_GET["v_page"];
+            
+            $p = $_GET["v_page"];
+            $q = save_char($_GET["q"]);
+            
+            if($v_modul=="role_access")
+            {
+                $arr_keyword[0] = "role_access_tbl.role_access_name";
+                $arr_keyword[1] = "role_access_tbl.POSITION_ID";
+                $arr_keyword[2] = "role_access_tbl.EMPLOYEE_ID";
+                $arr_keyword[3] = "role_access_tbl.NOTE";
+
+                $where = search_keyword($q, $arr_keyword);  
+                
+                $sql = "
+                        SELECT
+                          cid,
+                          role_access_name,
+                          POSITION_ID,
+                          EMPLOYEE_ID,
+                          NOTE,
+                          Active
+                        FROM
+                          role_access_tbl 
+                        WHERE
+                            1=1
+                            ".$where."
+                        ORDER BY 
+                           role_access_name ASC 
+                "; 
+                $arr_data["role_access_tbl_all"] = SQL_SELECT($sql, $db["dbms"]);
+                $arr_data["jml_data"][$v_modul] = count($arr_data["role_access_tbl_all"]); 
+                $start_limit = (($v_page-1)*$max_page);
+                
+                $sql = "
+                        SELECT
+                          cid,
+                          role_access_name,
+                          POSITION_ID,
+                          EMPLOYEE_ID,
+                          NOTE,
+                          Active
+                        FROM
+                          role_access_tbl 
+                        WHERE
+                            1=1
+                            ".$where." 
+                        ORDER BY
+                            role_access_name ASC
+                        LIMIT
+                            ".$start_limit.", ".$max_page." 
+                ";
+                $arr_data["role_access_tbl"] = SQL_SELECT($sql, $db["dbms"]);
+                
+                include("paging.php");
+                
+                echo "@#@";
+                
+                $_SESSION["list_file"][$v_modul] = "tbody";
+                include("admin_".$v_modul."_list.php");
+            }
+        }
+        
+        else if($ajax_type=="modal_ajax")
+        {
+            $v_modul    = $_GET["v_modul"];
+            $v_target   = $_GET["v_target"];   
+            
+            if($v_modul=="role_access" && $v_target=="EMPLOYEE_ID")
+            {
+                echo "title";
+                echo "@#@";
+                echo "content";
+            }
         }
         
        

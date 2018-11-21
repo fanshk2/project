@@ -4,7 +4,8 @@
 
     $apps_name          = "HRIS";
     $max_recent_task    = 20;
-    $base_url           = "http://10.0.1.128/hris";
+    $max_page           = 20;
+    $base_url           = "http:localhost/hris";
     $db["dbms"]         = "mysql";
     
     if($db["dbms"]=="mysql")
@@ -36,8 +37,6 @@
         
         $db["connect"] = pg_connect("host=".$db["host"]." port=65432 dbname=".$db["master"]." user=".$db["user"]." password='".$db["pass"]."'");
     }
-    
-    
-    
+
     include("function.php");
 ?>

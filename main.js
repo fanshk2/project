@@ -119,7 +119,16 @@ function CallAjax(ajax_type, param1, param2, param3, param4, param5)
                 {
                     arr_data = xmlhttp.responseText.split("@#@");
                     
-                    document.getElementById("td_body_"+param1).innerHTML = xmlhttp.responseText;
+                    if(param1=="menu")
+                    {
+                        document.getElementById("td_body_"+param1).innerHTML = xmlhttp.responseText;    
+                    }
+                    else
+                    {
+                        document.getElementById("tfoot_"+param1).innerHTML = arr_data[0];
+                        document.getElementById("td_body_"+param1).innerHTML = arr_data[1];    
+                    }
+                    
                     document.getElementById("loading_ajax").innerHTML = '';
 
                     return false;
@@ -242,6 +251,69 @@ function CallAjax(ajax_type, param1, param2, param3, param4, param5)
             xmlhttp.send(null);   
         }
         
+        else if(ajax_type=="page_ajax")
+        {
+            var q = document.getElementById("q_"+param1).value;
+            
+            variabel    = "&v_modul="+param1;
+            variabel   += "&v_page="+param2;
+            variabel   += "&q="+q;
+            
+            //alert(variabel);
+            
+            document.getElementById("loading_ajax").innerHTML = '<img src="assets/img/wait.gif">';
+
+            xmlhttp.open('get', base_url+'/engine.php?ajax_type='+ajax_type+variabel, true);
+            xmlhttp.onreadystatechange = function() {
+                if ((xmlhttp.readyState == 4) && (xmlhttp.status == 200))
+                {
+                    arr_data = xmlhttp.responseText.split("@#@");
+                    
+                    //alert(xmlhttp.responseText);
+                    
+                    document.getElementById("tfoot_"+param1).innerHTML = arr_data[0];
+                    document.getElementById("td_body_"+param1).innerHTML = arr_data[1];
+                    document.getElementById("loading_ajax").innerHTML = '';
+
+                    return false;
+                }
+
+            }
+
+            xmlhttp.send(null);   
+        }
+        
+        
+        else if(ajax_type=="modal_ajax")
+        {
+            variabel    = "&v_modul="+param1;
+            variabel   += "&v_target="+param2;
+
+            $('#myModal').modal('toggle'); 
+            if(param3)
+            {
+                document.getElementById("div_size_modal").classList.add(param3);    
+            }
+            
+            document.getElementById("loading_ajax").innerHTML = '<img src="assets/img/wait.gif">';
+
+            xmlhttp.open('get', base_url+'/engine.php?ajax_type='+ajax_type+variabel, true);
+            xmlhttp.onreadystatechange = function() {
+                if ((xmlhttp.readyState == 4) && (xmlhttp.status == 200))
+                {
+                    arr_data = xmlhttp.responseText.split("@#@");
+                    
+                    document.getElementById("Modal_Title").innerHTML = arr_data[0];
+                    document.getElementById("Modal_Content").innerHTML = arr_data[1];
+                    document.getElementById("loading_ajax").innerHTML = '';
+
+                    return false;
+                }
+
+            }
+
+            xmlhttp.send(null);   
+        }
 
 
     }

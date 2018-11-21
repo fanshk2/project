@@ -48,6 +48,29 @@
             {
                 include($arr_data["friendly_url_tbl"][0]["script"]);    
             } 
+            
+            ?>
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="false">
+                <div id="div_size_modal" class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="card-header bg-green bg-inverse">
+                            <h4 id="Modal_Title"></h4>
+                            <ul class="card-actions">
+                                <li>
+                                    <button data-dismiss="modal" type="button"><i class="ion-close"></i></button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-block" id="Modal_Content">
+                            
+                        </div>
+                        <div class="modal-footer">
+                            a
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            <?php
         }
         else
         {
